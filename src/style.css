@@ -1,0 +1,8 @@
+p.error-message {
+    color: #9c0000;
+    margin: 0 0 10px 0;
+}
+
+input[readonly] {
+    background-color: #eaeaea;
+}
