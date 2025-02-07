@@ -3,11 +3,11 @@ import { render } from 'preact';
 import {useEffect, useState} from "preact/hooks";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup";
-import {convertTime, minsToTime, timeRe, timeToMins} from "./time.js";
+import {minsToTime, timeRe} from "./time.js";
 
 import 'xp.css/dist/XP.css';
 import './style.css';
-import {convertDuration, durationRe} from "./duration.js";
+import {durationRe} from "./duration.js";
 import Duration from "./Duration.jsx";
 import calculateRemaining from "./calc.js";
 
