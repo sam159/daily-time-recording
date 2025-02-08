@@ -10,6 +10,7 @@ import './style.css';
 import {durationRe} from "./duration.js";
 import Duration from "./Duration.jsx";
 import calculateRemaining from "./calc.js";
+import {getStoredRecordedTime, getStoredDefaults, setStoredRecordedTime, setStoredDefaults} from "./store.js";
 
 const schema = yup.object({
 	startTime: yup.string().matches(timeRe, {message: '12 or 24 hr time format required'}).required(),
@@ -30,7 +31,8 @@ export function App() {
 			startTime: '09:00',
 			target: '7.5h',
 			break: '1h',
-			recorded: ''
+			recorded: getStoredRecordedTime(),
+			...getStoredDefaults()
 		},
 		resolver: yupResolver(schema)
 	});
@@ -48,6 +50,10 @@ export function App() {
 			return;
 		}
 		setRemaining(calculateRemaining(currentData));
+
+		// save new values to storage
+		setStoredDefaults({ startTime: currentData.startTime, target: currentData.target });
+		setStoredRecordedTime(currentData.recorded);
 
 		const interval = setInterval(() => {
 			setRemaining(calculateRemaining(currentData));
@@ -68,6 +74,10 @@ export function App() {
 					Daily Time Tracking
 				</div>
 				<div class="title-bar-controls">
+					<button type="button"
+							aria-label="Help"
+							title="Open in GitHub - https://github.com/sam159/daily-time-recording"
+							onClick={() => window.open("https://github.com/sam159/daily-time-recording", "_blank")} />
 					<button type="button" aria-label="Close" />
 				</div>
 			</div>

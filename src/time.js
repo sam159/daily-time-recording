@@ -40,10 +40,13 @@ export function minsToTime(totalMinutes) {
     let hours = Math.floor(absMinutes / 60);
     let minutes = absMinutes % 60;
     if (minutes > 0) {
-        return `${prefix}${hours}h ${minutes}m`;
+        if (hours > 0) {
+            return `${prefix}${hours}h ${minutes}m`;
+        }
+        return `${prefix}${minutes}m`;
     }
     if (hours > 0) {
-        return `${hours}h`;
+        return `${prefix}${hours}h`;
     }
-    return '0m';
+    return `${prefix}0m`;
 }
