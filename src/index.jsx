@@ -67,6 +67,13 @@ export function App() {
 		return () => sub.unsubscribe();
 	}, [handleSubmit, watch]);
 
+	// submit form when loaded if we have a previously recorded time
+	useEffect(() => {
+		if (getStoredRecordedTime()) {
+			handleSubmit(onSubmit)(null);
+		}
+	}, [handleSubmit]);
+
 	return (
 		<div class="window" style={{margin: "32px auto", width: "250px"}}>
 			<div class="title-bar">
