@@ -6,10 +6,12 @@ const RECORDED_KEY = 'recorded';
 const defaultsSchema = yup.object({
     startTime: yup.string().required(),
     target: yup.string().required(),
+    break: yup.string().required(),
 }).required();
 
 const recordedSchema = yup.object({
     recorded: yup.string().required(),
+    breakTaken: yup.boolean().required(),
     updated: yup.number().required().nullable()
 }).required();
 
@@ -39,11 +41,15 @@ export function getStoredDefaults() {
 }
 
 export function setStoredDefaults(data) {
-    localStorage.setItem(DEFAULTS_KEY, JSON.stringify(data));
+    try {
+        localStorage.setItem(DEFAULTS_KEY, JSON.stringify(defaultsSchema.cast(data, {stripUnknown: true})));
+    } catch (e) {
+        console.error(`Error setting stored defaults: ${e.message}`);
+    }
 }
 
 export function getStoredRecordedTime() {
-    const info = getJsonValue(RECORDED_KEY, { recorded: '', updated: null });
+    const info = getJsonValue(RECORDED_KEY, { recorded: '', breakTaken: false, updated: null });
     try {
         const data = recordedSchema.validateSync(info);
         if (data.updated != null) {
@@ -51,15 +57,18 @@ export function getStoredRecordedTime() {
             startOfDay.setHours(0, 0, 0, 0);
 
             if (data.updated < startOfDay.valueOf()) {
-                return '';
+                return { recorded: '0', breakTaken: false };
             }
         }
-        return data.recorded;
+        return {
+            recorded: data.recorded,
+            breakTaken: data.breakTaken,
+        };
     } catch (e) {
-        return '';
+        return { recorded: '0', breakTaken: false };
     }
 }
 
-export function setStoredRecordedTime(recorded) {
-    localStorage.setItem(RECORDED_KEY, JSON.stringify({ recorded, updated: new Date().valueOf() }));
+export function setStoredRecordedTime(recorded, breakTaken) {
+    localStorage.setItem(RECORDED_KEY, JSON.stringify({ recorded, breakTaken, updated: new Date().valueOf() }));
 }

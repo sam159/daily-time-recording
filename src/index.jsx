@@ -16,7 +16,7 @@ const schema = yup.object({
 	startTime: yup.string().matches(timeRe, {message: '12 or 24 hr time format required'}).required(),
 	target: yup.string().matches(durationRe, {message: 'duration in hh:mm or hrs and mins required'}).required(),
 	break: yup.string().matches(durationRe, {message: 'duration in hh:mm or hrs and mins required'}).required(),
-	breakTaken: yup.bool().required(),
+	breakTaken: yup.boolean().required(),
 	recorded: yup.string().matches(durationRe, {message: 'duration in hh:mm or hrs and mins required'}).required()
 }).required();
 
@@ -31,7 +31,9 @@ export function App() {
 			startTime: '09:00',
 			target: '7.5h',
 			break: '1h',
-			recorded: getStoredRecordedTime(),
+			breakTaken: false,
+			recorded: '0',
+			...getStoredRecordedTime(),
 			...getStoredDefaults()
 		},
 		resolver: yupResolver(schema)
@@ -52,8 +54,8 @@ export function App() {
 		setRemaining(calculateRemaining(currentData));
 
 		// save new values to storage
-		setStoredDefaults({ startTime: currentData.startTime, target: currentData.target });
-		setStoredRecordedTime(currentData.recorded);
+		setStoredDefaults(currentData);
+		setStoredRecordedTime(currentData.recorded, currentData.breakTaken);
 
 		const interval = setInterval(() => {
 			setRemaining(calculateRemaining(currentData));
