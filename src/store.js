@@ -57,15 +57,16 @@ export function getStoredRecordedTime() {
             startOfDay.setHours(0, 0, 0, 0);
 
             if (data.updated < startOfDay.valueOf()) {
-                return { recorded: '0', breakTaken: false };
+                return { recorded: '0', breakTaken: false, updated: data.updated };
             }
         }
         return {
             recorded: data.recorded,
             breakTaken: data.breakTaken,
+            updated: data.updated,
         };
     } catch (e) {
-        return { recorded: '0', breakTaken: false };
+        return { recorded: '0', breakTaken: false, updated: null };
     }
 }
 

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { render } from 'preact';
-import {useEffect, useState} from "preact/hooks";
+import {useEffect, useState, useRef} from "preact/hooks";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup";
 import {minsToTime, timeRe} from "./time.js";
@@ -25,7 +25,8 @@ export function App() {
 		handleSubmit,
 		register,
 		formState: { errors },
-		watch
+		watch,
+		setValue
 	} = useForm({
 		defaultValues: {
 			startTime: '09:00',
@@ -42,6 +43,22 @@ export function App() {
 	const [currentData, setCurrentData] = useState(null);
 	const [remaining, setRemaining] = useState(0);
 
+	const lastCheckedDate = useRef(new Date().toDateString());
+
+	// handle date change
+	useEffect(() => {
+		const interval = setInterval(() => {
+			const today = new Date().toDateString();
+			if (today !== lastCheckedDate.current) {
+				lastCheckedDate.current = today;
+				const stored = getStoredRecordedTime();
+				setValue('recorded', stored.recorded);
+				setValue('breakTaken', stored.breakTaken);
+			}
+		}, 60000);
+		return () => clearInterval(interval);
+	}, [setValue]);
+
 	const onSubmit = (data) => {
 		setCurrentData({...data});
 	};
@@ -51,6 +68,7 @@ export function App() {
 		if (!currentData) {
 			return;
 		}
+
 		setRemaining(calculateRemaining(currentData));
 
 		// save new values to storage
@@ -126,7 +144,7 @@ export function App() {
 					<p>
 						<button type="submit">Calculate</button>
 					</p>
-					
+
 					<div class="field-row-stacked">
 						<label for="RemainingTime">Remaining Time</label>
 						<input type="text" id="RemainingTime" value={minsToTime(remaining)} readonly />
